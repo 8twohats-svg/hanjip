@@ -1,36 +1,40 @@
-// GTM dataLayer 푸시 헬퍼
-// 이벤트 명명 규칙: snake_case
-// 모든 이벤트는 GTM 대시보드에서 GA4 태그/트리거로 매핑 가능
+// GA4 + GTM dataLayer 헬퍼
+// 이벤트는 GTM dataLayer + GA4(gtag) 둘 다에 푸시 (한쪽만 작동해도 데이터 수집됨)
 
 declare global {
   interface Window {
     dataLayer?: Record<string, unknown>[];
+    gtag?: (
+      command: string,
+      eventName: string,
+      params?: Record<string, unknown>,
+    ) => void;
   }
 }
 
-type EventPayload = {
-  event: string;
-  [key: string]: unknown;
-};
-
-function push(payload: EventPayload) {
+function fire(eventName: string, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
+
+  // GTM dataLayer
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(payload);
+  window.dataLayer.push({ event: eventName, ...params });
+
+  // GA4 direct (gtag.js)
+  if (window.gtag) {
+    window.gtag("event", eventName, params);
+  }
 }
 
-// 페이지/뷰 이벤트
 export const track = {
-  landingView: () => push({ event: "landing_view" }),
+  landingView: () => fire("landing_view"),
 
-  wizardStarted: () => push({ event: "wizard_started" }),
+  wizardStarted: () => fire("wizard_started"),
 
   stepView: (stepNumber: number, stepName: string) =>
-    push({ event: "step_view", step_number: stepNumber, step_name: stepName }),
+    fire("step_view", { step_number: stepNumber, step_name: stepName }),
 
   stepCompleted: (stepNumber: number, stepName: string, value: string) =>
-    push({
-      event: "step_completed",
+    fire("step_completed", {
       step_number: stepNumber,
       step_name: stepName,
       step_value: value,
@@ -44,22 +48,21 @@ export const track = {
     attire: string;
     ring: string;
     honeymoon: string;
-  }) => push({ event: "wizard_completed", ...params }),
+  }) => fire("wizard_completed", params),
 
   resultView: (totalCost: number, netCost: number) =>
-    push({
-      event: "result_view",
+    fire("result_view", {
       total_cost: totalCost,
       net_cost: netCost,
     }),
 
-  shareClicked: () => push({ event: "share_clicked" }),
+  shareClicked: () => fire("share_clicked"),
 
-  shareCopied: () => push({ event: "share_copied" }),
+  shareCopied: () => fire("share_copied"),
 
-  detailsExpanded: () => push({ event: "details_expanded" }),
+  detailsExpanded: () => fire("details_expanded"),
 
-  restartClicked: () => push({ event: "restart_clicked" }),
+  restartClicked: () => fire("restart_clicked"),
 
-  resumeFromUrl: () => push({ event: "resume_from_url" }),
+  resumeFromUrl: () => fire("resume_from_url"),
 };
