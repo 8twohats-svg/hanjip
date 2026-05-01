@@ -1,28 +1,17 @@
-// GA4 + GTM dataLayer 헬퍼
-// 이벤트는 GTM dataLayer + GA4(gtag) 둘 다에 푸시 (한쪽만 작동해도 데이터 수집됨)
+// GTM dataLayer 헬퍼
+// 모든 이벤트는 dataLayer에 푸시되어 GTM이 받아서 GA4·Clarity 등으로 라우팅
+// 이벤트 명명 규칙: snake_case
 
 declare global {
   interface Window {
     dataLayer?: Record<string, unknown>[];
-    gtag?: (
-      command: string,
-      eventName: string,
-      params?: Record<string, unknown>,
-    ) => void;
   }
 }
 
 function fire(eventName: string, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
-
-  // GTM dataLayer
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: eventName, ...params });
-
-  // GA4 direct (gtag.js)
-  if (window.gtag) {
-    window.gtag("event", eventName, params);
-  }
 }
 
 export const track = {
