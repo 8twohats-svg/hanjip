@@ -7,10 +7,12 @@ import {
   attireGrades,
   ringOptions,
   honeymoonOptions,
+  seasons,
 } from "../data/regions";
 import { formatKRW } from "./calculate";
 
 const KEYS: (keyof Answers)[] = [
+  "season",
   "region",
   "style",
   "guests",
@@ -46,6 +48,7 @@ export function generateShareText(
   answers: Required<Answers>,
   cost: CostBreakdown,
 ): string {
+  const season = seasons.find((s) => s.id === answers.season)?.label ?? "";
   const region = regions.find((r) => r.id === answers.region)?.label ?? "";
   const style = styles.find((s) => s.id === answers.style)?.label ?? "";
   const guests = guestOptions.find((g) => g.id === answers.guests)?.label ?? "";
@@ -61,7 +64,7 @@ export function generateShareText(
 💰 결혼하려면 필요한 금액: ${formatKRW(cost.net)}
 📊 총 비용: ${formatKRW(cost.total)}
 
-· ${region} · ${style} · 하객 ${guests}
+· ${season} · ${region} · ${style} · 하객 ${guests}
 · 스드메 ${sdm} · 예복 ${attire}
 · 결혼반지 ${ring} · 신혼여행 ${honeymoon}
 

@@ -7,9 +7,11 @@ import type {
   RegionId,
   RingId,
   SdmGradeId,
+  SeasonId,
   StyleId,
 } from "../types";
 import { ProgressBar } from "./ProgressBar";
+import { StepSeason } from "./steps/StepSeason";
 import { StepRegion } from "./steps/StepRegion";
 import { StepStyle } from "./steps/StepStyle";
 import { StepGuests } from "./steps/StepGuests";
@@ -21,16 +23,17 @@ import { QuickResult } from "./QuickResult";
 import { encodeAnswers, isAnswersComplete } from "../lib/share";
 import { track } from "../lib/analytics";
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
 
 const STEP_NAMES: Record<number, string> = {
-  1: "region",
-  2: "style",
-  3: "guests",
-  4: "sdm",
-  5: "attire",
-  6: "ring",
-  7: "honeymoon",
+  1: "season",
+  2: "region",
+  3: "style",
+  4: "guests",
+  5: "sdm",
+  6: "attire",
+  7: "ring",
+  8: "honeymoon",
 };
 
 type Props = {
@@ -44,7 +47,6 @@ export function Wizard({ initialAnswers }: Props) {
     !!initialAnswers && isAnswersComplete(initialAnswers),
   );
 
-  // URL 동기화
   useEffect(() => {
     if (showResult && isAnswersComplete(answers)) {
       const params = encodeAnswers(answers);
@@ -55,7 +57,6 @@ export function Wizard({ initialAnswers }: Props) {
     }
   }, [showResult, answers, step]);
 
-  // 스텝 뷰 트래킹
   useEffect(() => {
     if (!showResult) {
       track.stepView(step, STEP_NAMES[step]);
@@ -73,7 +74,6 @@ export function Wizard({ initialAnswers }: Props) {
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
     } else {
-      // 마지막 스텝 완료 → 위자드 종료
       if (isAnswersComplete(newAnswers)) {
         track.wizardCompleted({
           region: newAnswers.region,
@@ -109,42 +109,48 @@ export function Wizard({ initialAnswers }: Props) {
       <ProgressBar current={step} total={TOTAL_STEPS} />
 
       {step === 1 && (
+        <StepSeason
+          value={answers.season}
+          onChange={(v: SeasonId) => setAndNext("season", v)}
+        />
+      )}
+      {step === 2 && (
         <StepRegion
           value={answers.region}
           onChange={(v: RegionId) => setAndNext("region", v)}
         />
       )}
-      {step === 2 && (
+      {step === 3 && (
         <StepStyle
           value={answers.style}
           onChange={(v: StyleId) => setAndNext("style", v)}
         />
       )}
-      {step === 3 && (
+      {step === 4 && (
         <StepGuests
           value={answers.guests}
           onChange={(v: GuestId) => setAndNext("guests", v)}
         />
       )}
-      {step === 4 && (
+      {step === 5 && (
         <StepSdm
           value={answers.sdm}
           onChange={(v: SdmGradeId) => setAndNext("sdm", v)}
         />
       )}
-      {step === 5 && (
+      {step === 6 && (
         <StepAttire
           value={answers.attire}
           onChange={(v: AttireGradeId) => setAndNext("attire", v)}
         />
       )}
-      {step === 6 && (
+      {step === 7 && (
         <StepRing
           value={answers.ring}
           onChange={(v: RingId) => setAndNext("ring", v)}
         />
       )}
-      {step === 7 && (
+      {step === 8 && (
         <StepHoneymoon
           value={answers.honeymoon}
           onChange={(v: HoneymoonId) => setAndNext("honeymoon", v)}

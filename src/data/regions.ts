@@ -6,7 +6,60 @@ import type {
   AttireGradeId,
   RingId,
   HoneymoonId,
+  SeasonId,
 } from "../types";
+
+export const seasons: {
+  id: SeasonId;
+  label: string;
+  description: string;
+  emoji: string;
+}[] = [
+  {
+    id: "spring",
+    label: "봄 (3~5월)",
+    description: "결혼 성수기 · 대관료 ↑",
+    emoji: "🌸",
+  },
+  {
+    id: "summer",
+    label: "여름 (6~8월)",
+    description: "결혼 비수기 · 신혼여행 성수기",
+    emoji: "🌞",
+  },
+  {
+    id: "autumn",
+    label: "가을 (9~11월)",
+    description: "결혼 성수기 · 대관료 ↑",
+    emoji: "🍂",
+  },
+  {
+    id: "winter",
+    label: "겨울 (12~2월)",
+    description: "결혼 비수기 · 명절 영향",
+    emoji: "❄️",
+  },
+];
+
+// 결혼식 성수기·비수기 할증/할인
+export const seasonVenueMultiplier: Record<SeasonId, number> = {
+  spring: 1.15,
+  summer: 0.85,
+  autumn: 1.15,
+  winter: 0.85,
+};
+
+// 신혼여행 성수기·비수기 — 목적지 × 계절
+export const seasonHoneymoonMultiplier: Record<
+  HoneymoonId,
+  Record<SeasonId, number>
+> = {
+  domestic: { spring: 1.0, summer: 1.3, autumn: 1.0, winter: 0.85 },
+  asia: { spring: 1.0, summer: 1.4, autumn: 1.0, winter: 1.1 },
+  europe: { spring: 1.1, summer: 1.5, autumn: 1.0, winter: 0.85 },
+  americas: { spring: 1.0, summer: 1.3, autumn: 0.95, winter: 1.2 },
+  none: { spring: 1.0, summer: 1.0, autumn: 1.0, winter: 1.0 },
+};
 
 export const regions: { id: RegionId; label: string; emoji: string }[] = [
   { id: "gangnam", label: "서울 강남권", emoji: "🌆" },
@@ -25,10 +78,9 @@ export const styles: {
 }[] = [
   { id: "hotel", label: "호텔 예식", description: "고급 호텔에서" },
   { id: "general", label: "일반 예식장", description: "가장 흔한 선택" },
-  { id: "convention", label: "컨벤션", description: "넓고 화려한 공간" },
   { id: "small", label: "스몰웨딩", description: "가까운 분들만" },
   { id: "house", label: "하우스웨딩", description: "프라이빗한 공간" },
-  { id: "public", label: "공공시설", description: "구민회관·교회 등" },
+  { id: "public", label: "공공시설·종교시설", description: "구민회관·성당·교회 등" },
 ];
 
 export const guestOptions: {
@@ -109,7 +161,7 @@ export const honeymoonOptions: {
   value: number;
 }[] = [
   { id: "domestic", label: "국내", description: "제주·강원 등", value: 3_000_000 },
-  { id: "asia", label: "일본·동남아", description: "오키나와·다낭·발리 등", value: 5_000_000 },
+  { id: "asia", label: "일본·동남아", description: "오키나와·다낭·발리 등", value: 6_000_000 },
   { id: "europe", label: "유럽·호주", description: "이탈리아·스페인·시드니 등", value: 10_000_000 },
   { id: "americas", label: "미주·하와이·몰디브", description: "장거리·럭셔리 리조트", value: 15_000_000 },
   { id: "none", label: "안 가요", description: "신혼여행 생략", value: 0 },
@@ -119,19 +171,18 @@ export const regionAverages: Record<
   RegionId,
   { mealPerPerson: number; venueRent: number; sdmBase: number }
 > = {
-  gangnam: { mealPerPerson: 85_000, venueRent: 7_000_000, sdmBase: 3_300_000 },
+  gangnam: { mealPerPerson: 90_000, venueRent: 7_000_000, sdmBase: 3_300_000 },
   seoul: { mealPerPerson: 70_000, venueRent: 5_000_000, sdmBase: 3_000_000 },
   metro: { mealPerPerson: 60_000, venueRent: 3_500_000, sdmBase: 2_700_000 },
-  chungcheong: { mealPerPerson: 50_000, venueRent: 2_000_000, sdmBase: 2_700_000 },
-  jeolla: { mealPerPerson: 50_000, venueRent: 1_500_000, sdmBase: 3_400_000 },
-  gyeongsang: { mealPerPerson: 44_000, venueRent: 1_500_000, sdmBase: 3_300_000 },
-  "gangwon-jeju": { mealPerPerson: 50_000, venueRent: 1_000_000, sdmBase: 2_500_000 },
+  chungcheong: { mealPerPerson: 50_000, venueRent: 2_500_000, sdmBase: 2_700_000 },
+  jeolla: { mealPerPerson: 50_000, venueRent: 2_000_000, sdmBase: 3_400_000 },
+  gyeongsang: { mealPerPerson: 44_000, venueRent: 2_000_000, sdmBase: 3_300_000 },
+  "gangwon-jeju": { mealPerPerson: 50_000, venueRent: 2_000_000, sdmBase: 2_500_000 },
 };
 
 export const styleVenueMultiplier: Record<StyleId, number> = {
   hotel: 3.0,
   general: 1.0,
-  convention: 1.8,
   small: 0.7,
   house: 1.2,
   public: 0.3,
@@ -140,17 +191,16 @@ export const styleVenueMultiplier: Record<StyleId, number> = {
 export const styleMealMultiplier: Record<StyleId, number> = {
   hotel: 1.4,
   general: 1.0,
-  convention: 1.2,
   small: 0.9,
   house: 1.1,
   public: 0.7,
 };
 
 export const fixedAverages = {
-  sangkyenrye: 1_000_000,
-  bonsikExtra: 1_000_000,
-  honjuPrep: 1_500_000,
-  invitation: 1_000_000,
-  ceremonyExtra: 2_000_000,
-  giftPerGuest: 100_000,
+  sangkyenrye: 1_000_000, // 상견례 (양가 식사 + 인사 선물)
+  bonsikExtra: 800_000, // 본식 촬영·영상
+  honjuPrep: 2_900_000, // 양가 어머니 한복 + 양가 아버지 정장(대여·구매 혼합) + 메이크업·헤어
+  invitation: 1_500_000, // 청첩장(30~50만) + 청첩장 모임(평균 116만, 디지틀조선·가연 통계)
+  ceremonyExtra: 1_500_000, // 답례품·부케·사회자·헬퍼
+  giftPerGuest: 100_000, // 1인당 평균 축의금
 };

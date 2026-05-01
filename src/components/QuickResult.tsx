@@ -3,6 +3,9 @@ import type { Answers } from "../types";
 import {
   calculateCost,
   calculateRegionalCeremonyAverage,
+  calculateRange,
+  getOverallTier,
+  getItemTiers,
   getRegionalStats,
   formatKRW,
 } from "../lib/calculate";
@@ -14,6 +17,7 @@ import {
   attireGrades,
   ringOptions,
   honeymoonOptions,
+  seasons,
 } from "../data/regions";
 import { copyToClipboard, generateShareText } from "../lib/share";
 import { track } from "../lib/analytics";
@@ -49,6 +53,7 @@ export function QuickResult({ answers, onRestart }: Props) {
   const attire = attireGrades.find((a) => a.id === answers.attire);
   const ring = ringOptions.find((r) => r.id === answers.ring);
   const honeymoon = honeymoonOptions.find((h) => h.id === answers.honeymoon);
+  const season = seasons.find((s) => s.id === answers.season);
   const regionalStats = getRegionalStats(answers.region);
 
   const regionalCeremonyAvg = calculateRegionalCeremonyAverage(
@@ -56,244 +61,372 @@ export function QuickResult({ answers, onRestart }: Props) {
     answers.style,
   );
 
-  // 결혼식 자체 손익
   const ceremonyNet = cost.ceremonyTotal - cost.giftMoney;
   const ceremonyIsProfit = ceremonyNet < 0;
 
+  const range = calculateRange(
+    answers.season,
+    answers.region,
+    answers.style,
+    answers.guests,
+  );
+  const { tier, percentile } = getOverallTier(cost.total, range);
+  const itemTiers = getItemTiers(answers);
+
+  // 카테고리별 분류 (결혼식 전 사전 결제)
+  const SDM_PHOTO_VALUE = 800_000; // 본식 촬영 분리
+  const SDM_ONLY_VALUE = cost.sdm - SDM_PHOTO_VALUE;
+
+  const categories = [
+    {
+      emoji: "🤝",
+      title: "상견례",
+      total: cost.sangkyenrye,
+      details: [{ label: "양가 식사·인사 선물", value: cost.sangkyenrye }],
+    },
+    {
+      emoji: "📷",
+      title: "스드메",
+      total: cost.sdm,
+      details: [
+        {
+          label: `스튜디오·드레스·메이크업 (${sdm?.label})`,
+          value: SDM_ONLY_VALUE,
+        },
+        { label: "본식 촬영·영상", value: SDM_PHOTO_VALUE },
+      ],
+    },
+    {
+      emoji: "👔",
+      title: "의복",
+      total: cost.attire + cost.honjuPrep,
+      details: [
+        {
+          label: `신랑 예복 (${attire?.label})`,
+          value: cost.attire,
+        },
+        {
+          label: "양가 부모 한복·정장·메이크업",
+          value: cost.honjuPrep,
+        },
+      ],
+    },
+    {
+      emoji: "💍",
+      title: "결혼반지",
+      total: cost.ring,
+      details: [{ label: `한 쌍 (${ring?.label})`, value: cost.ring }],
+    },
+    {
+      emoji: "📩",
+      title: "청첩장",
+      total: cost.invitation,
+      details: [
+        { label: "청첩장 디자인·제작", value: 400_000 },
+        { label: "청첩장 모임 (지인 식사)", value: cost.invitation - 400_000 },
+      ],
+    },
+    {
+      emoji: "✈️",
+      title: "신혼여행",
+      total: cost.honeymoon,
+      details: [
+        {
+          label: `${honeymoon?.label} (${season?.label} 시즌)`,
+          value: cost.honeymoon,
+        },
+      ],
+    },
+  ];
+
   return (
     <div className="space-y-6">
-      {/* 안내 배너 */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-900 leading-relaxed">
-        💡 정확한 견적이 아니라 <strong>대략적인 참고용 추정치</strong>예요. 실제 비용은 업체·시기·옵션에 따라 크게 달라질 수 있어요.
-      </div>
-
-      {/* 핵심 숫자 2개 */}
-      <div className="space-y-3">
-        {/* 필요한 금액 (자기 부담) */}
-        <div className="bg-charcoal text-white rounded-3xl p-7 text-center space-y-2">
-          <p className="text-sm text-white/70">결혼하려면 필요한 금액</p>
-          <p className="text-5xl font-bold text-rose">
-            {formatKRW(cost.net)}
-          </p>
-          <p className="text-xs text-white/60">
-            축의금 회수 후, 자기 부담
-          </p>
-        </div>
-
-        {/* 총 비용 */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200 flex items-baseline justify-between">
-          <div>
-            <p className="text-xs text-muted">총 비용</p>
-            <p className="text-xs text-muted">결혼식까지 들어가는 모든 비용</p>
-          </div>
-          <p className="text-2xl font-bold text-charcoal">
-            {formatKRW(cost.total)}
-          </p>
-        </div>
-      </div>
-
-      {/* 자금 흐름 시간순 */}
-      <div className="space-y-3">
-        {/* 결혼식 전 */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200">
-          <div className="flex items-baseline justify-between mb-2">
-            <div>
-              <p className="text-xs text-muted">① 결혼식 전</p>
-              <h3 className="font-semibold text-charcoal">
-                미리 결제할 비용
-              </h3>
-            </div>
-            <span className="text-xl font-bold text-charcoal">
+      {/* Hero */}
+      <div className="bg-white rounded-3xl border border-gray-200 p-7 sm:p-9 space-y-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm text-muted">
+              결혼식 전 미리 필요한 돈
+            </p>
+            <p className="text-4xl sm:text-5xl font-bold text-rose tracking-tight mt-1.5">
               {formatKRW(cost.prepTotal)}
-            </span>
+            </p>
+            <p className="text-xs text-muted mt-2 leading-relaxed">
+              상견례·스드메·의복·반지·청첩장·신혼여행 사전 결제
+            </p>
           </div>
-          <p className="text-xs text-muted">
-            상견례 · 스드메 · 예복 · 결혼반지 · 청첩장 · 신혼여행
+          <div className="text-right shrink-0">
+            <p className="text-xs text-muted">평가</p>
+            <p className="text-2xl mt-1.5">{tier.emoji}</p>
+            <p className="font-bold text-sm sm:text-base text-charcoal">
+              {tier.label}
+            </p>
+          </div>
+        </div>
+
+        {/* 위치바 */}
+        <div>
+          <div className="relative h-2 bg-white rounded-full overflow-hidden border border-gray-200">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-200 via-amber-200 to-rose-300" />
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-charcoal border-2 border-white shadow"
+              style={{ left: `${Math.max(2, Math.min(98, percentile))}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-muted mt-2">
+            <span>가성비</span>
+            <span>표준</span>
+            <span>럭셔리</span>
+          </div>
+          <p className="text-xs text-muted mt-3 leading-relaxed">
+            같은 조건 가능 범위 {formatKRW(range.min)} ~ {formatKRW(range.max)}{" "}
+            —{" "}
+            <span className="text-charcoal font-medium">
+              상위 {100 - percentile}%
+            </span>
           </p>
         </div>
 
-        {/* 결혼식 당일 */}
-        <div className="bg-rose-soft rounded-2xl p-5">
-          <div className="flex items-baseline justify-between mb-2">
-            <div>
-              <p className="text-xs text-muted">② 결혼식 당일</p>
-              <h3 className="font-semibold text-charcoal">결혼식장 정산</h3>
-            </div>
-            <span className="text-xl font-bold text-charcoal">
-              {formatKRW(cost.ceremonyTotal)}
-            </span>
+        {/* 지역 통계 */}
+        <div className="pt-5 border-t border-gray-200">
+          <div className="flex items-baseline justify-between mb-3">
+            <p className="text-xs text-muted uppercase tracking-wider font-medium">
+              {region?.label} 결혼 비용
+            </p>
+            <p className="text-xs text-muted">전국 평균 대비</p>
           </div>
-          <p className="text-xs text-muted mb-3">
-            대관료 · 식대 · 답례품·부케·사회자·헬퍼
+          <div className="space-y-3">
+            <RegionStat
+              label="1인당 식대"
+              mine={regionalStats.meal.mine}
+              min={regionalStats.meal.min}
+              max={regionalStats.meal.max}
+            />
+            <RegionStat
+              label="대관료"
+              mine={regionalStats.venue.mine}
+              min={regionalStats.venue.min}
+              max={regionalStats.venue.max}
+            />
+            <RegionStat
+              label="스드메"
+              mine={regionalStats.sdm.mine}
+              min={regionalStats.sdm.min}
+              max={regionalStats.sdm.max}
+            />
+          </div>
+          <p className="text-xs text-muted mt-3 leading-relaxed">
+            {region?.label} · {style?.label} 평균:{" "}
+            <span className="font-medium text-charcoal">
+              {formatKRW(regionalCeremonyAvg)}
+            </span>
           </p>
-          <div className="bg-white rounded-xl p-3 space-y-1.5">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted">
-                축의금 ({guests?.count}명 × 10만원)
-              </span>
-              <span className="text-emerald-600">
-                + {formatKRW(cost.giftMoney)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm pt-1.5 border-t border-gray-100">
-              <span className="font-medium text-charcoal">
-                {ceremonyIsProfit ? "✨ 결혼식 흑자" : "결혼식 부담"}
-              </span>
-              <span
-                className={`font-bold ${ceremonyIsProfit ? "text-emerald-600" : "text-rose"}`}
-              >
-                {ceremonyIsProfit ? "+" : "-"}
-                {formatKRW(Math.abs(ceremonyNet))}
-              </span>
-            </div>
+        </div>
+
+        {/* 항목별 선택 스타일 */}
+        <div className="pt-5 border-t border-gray-200">
+          <p className="text-xs text-muted mb-3 uppercase tracking-wider font-medium">
+            항목별 선택 스타일
+          </p>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+            <ItemTierRow
+              label="스드메"
+              choice={sdm?.label}
+              tier={itemTiers.sdm}
+            />
+            <ItemTierRow
+              label="신랑 예복"
+              choice={attire?.label}
+              tier={itemTiers.attire}
+            />
+            <ItemTierRow
+              label="결혼반지"
+              choice={ring?.label}
+              tier={itemTiers.ring}
+            />
+            <ItemTierRow
+              label="신혼여행"
+              choice={honeymoon?.label}
+              tier={itemTiers.honeymoon}
+            />
           </div>
         </div>
       </div>
 
-      {/* 항목별 상세 (펼쳐서) */}
-      <details
-        className="bg-white rounded-2xl border border-gray-200 overflow-hidden"
-        onToggle={(e) => {
-          if ((e.currentTarget as HTMLDetailsElement).open) {
-            track.detailsExpanded();
-          }
-        }}
-      >
-        <summary className="p-5 cursor-pointer font-semibold text-charcoal hover:bg-gray-50">
-          항목별 상세 보기
-        </summary>
-        <div className="p-5 pt-0 space-y-4">
-          <DetailGroup
-            title="결혼식 전 (사전 결제)"
-            total={cost.prepTotal}
-            items={[
-              { label: "상견례", value: cost.sangkyenrye },
-              {
-                label: "스드메 + 본식 촬영",
-                value: cost.sdm,
-                hint: sdm?.label,
-              },
-              {
-                label: "신랑 예복 (양복)",
-                value: cost.attire,
-                hint: attire?.label,
-              },
-              { label: "혼주 메이크업·한복", value: cost.honjuPrep },
-              {
-                label: "결혼반지 (한 쌍)",
-                value: cost.ring,
-                hint: ring?.label,
-              },
-              { label: "청첩장 + 청첩장 모임", value: cost.invitation },
-              {
-                label: "신혼여행",
-                value: cost.honeymoon,
-                hint: honeymoon?.label,
-              },
-            ]}
-          />
-          <DetailGroup
-            title={`결혼식 당일 (${region?.label} · ${style?.label})`}
-            total={cost.ceremonyTotal}
-            items={[
-              { label: "대관료", value: cost.venueRent },
-              {
-                label: `식대 (${guests?.count}명 × ${formatKRW(regionalStats.meal.mine)})`,
-                value: cost.meal,
-              },
-              { label: "답례품·부케·사회자·헬퍼", value: cost.ceremonyExtra },
-            ]}
-          />
+      {/* 결혼식 사전 결제 (Hero와 같은 패턴) */}
+      <div className="bg-white rounded-3xl border border-gray-200 p-7 sm:p-9 space-y-5">
+        <div>
+          <p className="text-xs sm:text-sm text-muted">사전 결제 금액</p>
+          <p className="text-3xl sm:text-4xl font-bold text-rose tracking-tight mt-1.5">
+            - {formatKRW(cost.prepTotal)}
+          </p>
         </div>
-      </details>
 
-      {/* 지역 통계 */}
-      <div className="bg-white rounded-2xl p-6 border border-gray-200 space-y-4">
-        <h3 className="font-semibold text-charcoal">
-          {region?.label} 의 결혼 비용 위치
-        </h3>
-        <div className="space-y-3 text-sm">
-          <RegionStat
-            label="1인당 식대"
-            mine={regionalStats.meal.mine}
-            min={regionalStats.meal.min}
-            max={regionalStats.meal.max}
-          />
-          <RegionStat
-            label="대관료 (일반 예식장)"
-            mine={regionalStats.venue.mine}
-            min={regionalStats.venue.min}
-            max={regionalStats.venue.max}
-          />
-          <RegionStat
-            label="스드메 평균"
-            mine={regionalStats.sdm.mine}
-            min={regionalStats.sdm.min}
-            max={regionalStats.sdm.max}
-          />
+        {/* 2열 카테고리 (테두리 없이, - 빨강) */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 pt-4 border-t border-gray-200">
+          {categories.map((cat) => (
+            <div
+              key={cat.title}
+              className="flex items-center justify-between text-sm gap-2"
+            >
+              <span className="flex items-center gap-1.5 text-charcoal min-w-0">
+                <span className="text-base shrink-0">{cat.emoji}</span>
+                <span className="truncate">{cat.title}</span>
+              </span>
+              <span className="font-medium text-rose shrink-0">
+                - {formatKRW(cat.total)}
+              </span>
+            </div>
+          ))}
         </div>
-        <p className="text-xs text-muted pt-2 border-t border-gray-100">
-          {region?.label} · {style?.label} 평균 결혼식 비용:{" "}
-          <span className="font-medium text-charcoal">
-            {formatKRW(regionalCeremonyAvg)}
-          </span>
-        </p>
+
+        {/* 상세 보기 */}
+        <details
+          className="group pt-2 border-t border-gray-200"
+          onToggle={(e) => {
+            if ((e.currentTarget as HTMLDetailsElement).open) {
+              track.detailsExpanded();
+            }
+          }}
+        >
+          <summary className="cursor-pointer text-sm text-muted hover:text-charcoal flex items-center justify-center gap-1 list-none py-2">
+            <span>상세 보기</span>
+            <span className="transition-transform group-open:rotate-180 text-xs">
+              ▾
+            </span>
+          </summary>
+          <div className="pt-4 space-y-4">
+            {categories.map((cat) => (
+              <div key={cat.title}>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-base">{cat.emoji}</span>
+                  <span className="text-sm font-medium text-charcoal">
+                    {cat.title}
+                  </span>
+                </div>
+                <div className="space-y-1.5 pl-7">
+                  {cat.details.map((d, i) => (
+                    <div key={i} className="flex justify-between text-sm">
+                      <span className="text-muted">{d.label}</span>
+                      <span className="text-charcoal">
+                        {formatKRW(d.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </details>
       </div>
 
+      {/* 결혼식 당일 비용 (흑자/적자 메인) */}
+      <div className="bg-white rounded-3xl border border-gray-200 p-7 sm:p-9 space-y-5">
+        <div>
+          <p className="text-xs sm:text-sm text-muted">결혼식 당일 비용</p>
+          <p
+            className={`text-3xl sm:text-4xl font-bold tracking-tight mt-1.5 ${
+              ceremonyIsProfit ? "text-blue-600" : "text-rose"
+            }`}
+          >
+            {ceremonyIsProfit ? "+" : "-"}
+            {formatKRW(Math.abs(ceremonyNet))}
+            <span className="text-base ml-2 font-medium text-charcoal">
+              {ceremonyIsProfit ? "흑자" : "추가 부담"}
+            </span>
+          </p>
+        </div>
+
+        {/* 비용 항목 (- 빨간색) */}
+        <div className="space-y-2 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-charcoal">대관료</span>
+            <span className="font-medium text-rose">
+              - {formatKRW(cost.venueRent)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-charcoal">
+              식대 ({Math.round(regionalStats.meal.mine / 10_000)}만원 ×{" "}
+              {guests?.count}명)
+            </span>
+            <span className="font-medium text-rose">
+              - {formatKRW(cost.meal)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-charcoal">답례품·부케·사회자·헬퍼</span>
+            <span className="font-medium text-rose">
+              - {formatKRW(cost.ceremonyExtra)}
+            </span>
+          </div>
+
+          {/* 축의금 (+ 초록색, 분리) */}
+          <div className="flex items-center justify-between text-sm pt-3 mt-1 border-t border-gray-200">
+            <span className="text-charcoal">
+              축의금 (10만원 × {guests?.count}명)
+            </span>
+            <span className="font-medium text-blue-600">
+              + {formatKRW(cost.giftMoney)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 액션 */}
       <div className="space-y-3">
         <button
           type="button"
           onClick={handleShare}
-          className="w-full py-4 rounded-2xl bg-rose text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-rose/20"
+          className="w-full py-4 rounded-2xl bg-rose text-white font-semibold hover:opacity-90 transition-opacity"
         >
-          {copied ? "✓ 결과가 복사됐어요!" : "📋 결과 복사 (카톡 공유용)"}
+          {copied ? "✓ 결과가 복사됐어요" : "결과 공유하기"}
         </button>
         <button
           type="button"
           onClick={onRestart}
-          className="w-full py-4 rounded-2xl bg-white text-charcoal font-semibold border border-gray-200 hover:bg-gray-50"
+          className="w-full py-3 text-sm text-muted hover:text-charcoal transition-colors"
         >
           처음부터 다시
         </button>
       </div>
 
-      <p className="text-xs text-muted text-center px-4 leading-relaxed">
-        * 모든 금액은 평균값을 활용한 <strong>추정치</strong>예요.<br />
-        실제 결혼 비용은 지역·시기·업체·개인 선택에 따라 크게 다릅니다.<br />
-        참고 자료로만 활용해주세요.
+      {/* Disclaimer */}
+      <p className="text-xs text-muted/70 text-center px-4 leading-relaxed pt-2">
+        대략적인 참고용 추정치예요.
+        <br />
+        실제 비용은 업체·시기·옵션에 따라 달라집니다.
       </p>
     </div>
   );
 }
 
-function DetailGroup({
-  title,
-  total,
-  items,
+function ItemTierRow({
+  label,
+  choice,
+  tier,
 }: {
-  title: string;
-  total: number;
-  items: { label: string; value: number; hint?: string }[];
+  label: string;
+  choice?: string;
+  tier: { label: string; emoji: string; tier: string };
 }) {
+  const colorClass =
+    tier.tier === "thrifty"
+      ? "text-emerald-700 bg-emerald-50"
+      : tier.tier === "standard"
+        ? "text-amber-700 bg-amber-50"
+        : "text-rose bg-white";
   return (
-    <div>
-      <div className="flex justify-between mb-2">
-        <p className="text-sm font-medium text-charcoal">{title}</p>
-        <p className="text-sm font-bold text-charcoal">{formatKRW(total)}</p>
+    <div className="flex items-center justify-between gap-2">
+      <div className="flex-1 min-w-0">
+        <div className="text-charcoal text-sm font-medium">{label}</div>
+        <div className="text-muted text-xs mt-0.5 truncate">{choice}</div>
       </div>
-      <div className="space-y-1.5 pl-2 border-l-2 border-gray-100">
-        {items.map((item) => (
-          <div key={item.label} className="flex justify-between text-sm pl-3">
-            <span className="text-muted">
-              {item.label}
-              {item.hint && (
-                <span className="ml-1 text-xs text-rose">({item.hint})</span>
-              )}
-            </span>
-            <span className="text-charcoal">{formatKRW(item.value)}</span>
-          </div>
-        ))}
-      </div>
+      <span
+        className={`shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${colorClass}`}
+      >
+        {tier.emoji} {tier.label}
+      </span>
     </div>
   );
 }
@@ -312,19 +445,15 @@ function RegionStat({
   const position = ((mine - min) / (max - min)) * 100;
   return (
     <div>
-      <div className="flex justify-between mb-1">
-        <span className="text-charcoal">{label}</span>
-        <span className="font-medium text-rose">{formatKRW(mine)}</span>
+      <div className="flex justify-between mb-1.5 text-sm">
+        <span className="text-muted">{label}</span>
+        <span className="font-medium text-charcoal">{formatKRW(mine)}</span>
       </div>
-      <div className="relative h-1 bg-gray-200 rounded-full">
+      <div className="relative h-1 bg-gray-100 rounded-full">
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-rose"
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-rose"
           style={{ left: `${position}%` }}
         />
-      </div>
-      <div className="flex justify-between text-xs text-muted mt-1">
-        <span>최저 {formatKRW(min)}</span>
-        <span>최고 {formatKRW(max)}</span>
       </div>
     </div>
   );

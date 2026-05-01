@@ -1,3 +1,5 @@
+export type SeasonId = "spring" | "summer" | "autumn" | "winter";
+
 export type RegionId =
   | "gangnam"
   | "seoul"
@@ -10,7 +12,6 @@ export type RegionId =
 export type StyleId =
   | "hotel"
   | "general"
-  | "convention"
   | "small"
   | "house"
   | "public";
@@ -23,6 +24,7 @@ export type RingId = "myungpum" | "cheongdam" | "jongno" | "dongne" | "none";
 export type HoneymoonId = "domestic" | "asia" | "europe" | "americas" | "none";
 
 export type Answers = {
+  season?: SeasonId;
   region?: RegionId;
   style?: StyleId;
   guests?: GuestId;
