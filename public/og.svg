@@ -1,0 +1,27 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFE4E6"/>
+      <stop offset="100%" stop-color="#FAFAF7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <circle cx="1050" cy="120" r="180" fill="#FFE4E6" opacity="0.5"/>
+  <circle cx="120" cy="540" r="120" fill="#FFE4E6" opacity="0.4"/>
+
+  <g transform="translate(90, 110)">
+    <rect width="160" height="160" rx="32" fill="#FB7185"/>
+    <path d="M28 80 L80 32 L132 80 L132 138 L28 138 Z" fill="white"/>
+    <rect x="65" y="96" width="30" height="42" rx="4" fill="#FB7185"/>
+  </g>
+
+  <text x="280" y="190" font-family="'Apple SD Gothic Neo', 'Pretendard', 'Noto Sans KR', system-ui, sans-serif" font-size="56" font-weight="800" fill="#1F2937">한집</text>
+  <text x="280" y="235" font-family="'Apple SD Gothic Neo', 'Pretendard', 'Noto Sans KR', system-ui, sans-serif" font-size="26" font-weight="500" fill="#6B7280">우리 결혼 비용 진단</text>
+
+  <text x="90" y="380" font-family="'Apple SD Gothic Neo', 'Pretendard', 'Noto Sans KR', system-ui, sans-serif" font-size="76" font-weight="800" fill="#1F2937">결혼 비용,</text>
+  <text x="90" y="470" font-family="'Apple SD Gothic Neo', 'Pretendard', 'Noto Sans KR', system-ui, sans-serif" font-size="76" font-weight="800" fill="#FB7185">얼마나 들까요?</text>
+
+  <text x="90" y="550" font-family="'Apple SD Gothic Neo', 'Pretendard', 'Noto Sans KR', system-ui, sans-serif" font-size="26" font-weight="500" fill="#6B7280">8개 질문 · 30초 진단 · 또래 평균과 비교</text>
+</svg>
