@@ -36,8 +36,23 @@ function App() {
           <Wizard initialAnswers={initialAnswers} />
         )}
 
-        <footer className="mt-16 text-center text-xs text-muted">
-          <p>한집</p>
+        <footer className="mt-16 text-center text-xs text-muted space-y-2">
+          <div className="space-x-3">
+            <a
+              href="/privacy/"
+              className="hover:text-charcoal transition-colors"
+            >
+              개인정보처리방침
+            </a>
+            <span>·</span>
+            <a
+              href="/terms/"
+              className="hover:text-charcoal transition-colors"
+            >
+              이용약관
+            </a>
+          </div>
+          <p>© 2026 한집</p>
         </footer>
       </div>
     </div>
