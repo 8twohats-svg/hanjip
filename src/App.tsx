@@ -37,6 +37,25 @@ function App() {
         )}
 
         <footer className="mt-16 text-center text-xs text-muted space-y-2">
+          <div className="space-x-2 flex flex-wrap justify-center gap-y-1">
+            <a href="/guide/" className="hover:text-charcoal transition-colors">
+              결혼 비용 가이드
+            </a>
+            <span>·</span>
+            <a
+              href="/sdm-prices/"
+              className="hover:text-charcoal transition-colors"
+            >
+              스드메 가격
+            </a>
+            <span>·</span>
+            <a
+              href="/honeymoon-cost/"
+              className="hover:text-charcoal transition-colors"
+            >
+              신혼여행 비용
+            </a>
+          </div>
           <div className="space-x-3">
             <a
               href="/privacy/"
