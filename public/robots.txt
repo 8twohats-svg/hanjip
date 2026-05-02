@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
 
+User-agent: Yeti
+Allow: /
+
+User-agent: NaverBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
 Sitemap: https://hanjip.pages.dev/sitemap.xml
