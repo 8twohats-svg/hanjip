@@ -1,0 +1,59 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-05-02T00:00:00.000Z",
+  "containerVersion": {
+    "container": {
+      "publicId": "GTM-WQTG64SX",
+      "name": "hanjip.pages.dev",
+      "usageContext": ["WEB"]
+    },
+    "tag": [
+      {
+        "name": "GA4 - Configuration",
+        "type": "googtag",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "tagId", "value": "G-1Z0JB35X2G" }
+        ],
+        "firingTriggerId": ["2147479553"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "name": "GA4 - Custom Events",
+        "type": "gaawe",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "{{Event}}" },
+          { "type": "TEMPLATE", "key": "measurementId", "value": "G-1Z0JB35X2G" },
+          { "type": "BOOLEAN", "key": "sendEcommerceData", "value": "false" }
+        ],
+        "firingTriggerId": ["custom-events-trigger"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      }
+    ],
+    "trigger": [
+      {
+        "triggerId": "custom-events-trigger",
+        "name": "All Custom Events (한집)",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "MATCH_REGEX",
+            "parameter": [
+              { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "^(landing_view|wizard_started|step_view|step_completed|wizard_completed|result_view|share_clicked|share_copied|details_expanded|restart_clicked|resume_from_url)$"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "builtInVariable": [
+      { "type": "EVENT", "name": "Event" },
+      { "type": "PAGE_PATH", "name": "Page Path" },
+      { "type": "PAGE_URL", "name": "Page URL" },
+      { "type": "REFERRER", "name": "Referrer" }
+    ]
+  }
+}

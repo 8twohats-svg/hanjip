@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://hanjip.pages.dev/sdm-vs-package/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#FB7185" />
+    <meta name="description" content="스드메 패키지 vs 분리 계약 비교 — 가격 차이·시간·품질·옵션 부풀리기 위험까지. 어떤 부부가 어떤 방식이 맞는지 정리." />
+    <meta name="keywords" content="스드메 패키지, 스드메 분리, 스튜디오 드레스 메이크업, 웨딩홀 제휴 스드메, 가성비 스드메" />
+    <meta property="og:title" content="스드메 패키지 vs 분리 계약 — 한집" />
+    <meta property="og:description" content="가격·품질·시간 — 두 방식 차이 한눈에." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://hanjip.pages.dev/sdm-vs-package/" />
+    <meta property="og:image" content="https://hanjip.pages.dev/og.png" />
+    <title>스드메 패키지 vs 분리 계약 비교 — 한집</title>
+    <style>
+      :root { --cream: #FAFAF7; --rose: #FB7185; --rose-soft: #FFE4E6; --charcoal: #1F2937; --muted: #6B7280; --border: #E5E7EB; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: "Pretendard", system-ui, -apple-system, sans-serif; background: var(--cream); color: var(--charcoal); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+      @font-face { font-family: "Pretendard"; font-weight: 45 920; font-style: normal; font-display: swap; src: url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2") format("woff2-variations"); }
+      .container { max-width: 720px; margin: 0 auto; padding: 48px 20px 80px; }
+      header { margin-bottom: 32px; }
+      header > a { color: var(--muted); text-decoration: none; font-size: 14px; }
+      h1 { font-size: 32px; font-weight: 800; margin: 16px 0 8px; line-height: 1.3; }
+      .lead { font-size: 16px; color: var(--muted); margin-bottom: 32px; }
+      h2 { font-size: 22px; font-weight: 700; margin-top: 40px; margin-bottom: 12px; }
+      h3 { font-size: 17px; font-weight: 700; margin-top: 24px; margin-bottom: 8px; }
+      p, li { font-size: 15px; }
+      ul, ol { padding-left: 20px; }
+      a { color: var(--rose); text-decoration: underline; }
+      .table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+      .table th, .table td { padding: 10px; border: 1px solid var(--border); text-align: left; background: white; }
+      .table th { background: #F9FAFB; font-weight: 600; }
+      .cta { background: linear-gradient(135deg, var(--rose-soft), white); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin: 32px 0; text-align: center; }
+      .cta h3 { margin-top: 0; }
+      .cta a { display: inline-block; background: var(--rose); color: white; padding: 12px 28px; border-radius: 12px; font-weight: 600; text-decoration: none; margin-top: 12px; }
+      .highlight { background: var(--rose-soft); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+      blockquote { border-left: 3px solid var(--rose); padding-left: 16px; margin: 16px 0; color: var(--muted); font-style: italic; }
+      footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); text-align: center; }
+      footer a { color: var(--muted); margin: 0 8px; text-decoration: none; }
+      .related { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 24px 0; }
+      @media (min-width: 600px) { .related { grid-template-columns: 1fr 1fr; } }
+      .related a { display: block; padding: 16px; border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--charcoal); background: white; }
+      .related a:hover { border-color: var(--rose); }
+      .related .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+      .related .title { font-weight: 600; }
+      .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+      .vs .col { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+      .vs h3 { margin-top: 0; color: var(--rose); }
+      .vs ul { padding-left: 18px; margin: 0; }
+      .vs li { font-size: 14px; margin-bottom: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <a href="/">← 한집 홈으로</a>
+        <h1>스드메 패키지 vs 분리 계약 — 어떻게 다른가</h1>
+        <p class="lead">스튜디오·드레스·메이크업을 묶음으로 할지 따로 할지. 한국 신혼부부가 가장 많이 고민하는 결정 중 하나예요. 가격·품질·시간 비교 정리.</p>
+      </header>
+
+      <p>스드메는 평균 <span class="highlight">380~500만원</span>이 드는 항목이에요. 웨딩홀 제휴 패키지(번들)로 묶으면 편하지만 옵션 부풀리기로 비싸지기 쉽고, 따로 계약하면 가격은 줄어드는 대신 발품을 팔아야 해요. 둘의 차이를 정리했습니다.</p>
+
+      <h2>한눈에 비교</h2>
+
+      <div class="vs">
+        <div class="col">
+          <h3>📦 패키지 (번들)</h3>
+          <ul>
+            <li>편함 — 한 번에 다 정해짐</li>
+            <li>웨딩홀 제휴 → 할인</li>
+            <li>의외의 옵션 부풀리기 (+50~150만원)</li>
+            <li>품질 일관성 보장 X</li>
+            <li>변경·취소 어려움</li>
+            <li>총 비용 평균 <span class="highlight">450~550만원</span></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>🔍 분리 계약</h3>
+          <ul>
+            <li>발품 필요 (3~5곳 방문)</li>
+            <li>가격 비교로 50~150만원 절감</li>
+            <li>각 분야 1위 업체 골라잡기</li>
+            <li>본인 취향에 맞춤</li>
+            <li>일정 조정 부담</li>
+            <li>총 비용 평균 <span class="highlight">350~450만원</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>패키지의 함정 — "옵션 부풀리기"</h2>
+      <p>웨딩홀 제휴 패키지에서 가장 많이 발생하는 추가 비용 패턴:</p>
+
+      <table class="table">
+        <thead>
+          <tr><th>기본 패키지 금액</th><th>추가되는 옵션</th><th>실제 결제액</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>299만원</td><td>드레스 등급업 50, 본식 메이크업 30, 원판 사진 80</td><td>459만원</td></tr>
+          <tr><td>399만원</td><td>드레스 추가 25만, 액자 60, 헤어팩 25, 친정엄마 메이크업 30</td><td>539만원</td></tr>
+          <tr><td>499만원</td><td>스튜디오 의상 추가 40, 한복 30, 부케 25, 본식 출장 메이크업 50</td><td>644만원</td></tr>
+        </tbody>
+      </table>
+
+      <p>광고된 가격 + 실제 결제액 사이 차이가 <span class="highlight">평균 100~200만원</span>이에요. 이건 사기는 아니고, 기본 패키지에 포함 안 된 항목을 안내하는 정상 영업이지만 미리 모르면 당황스럽습니다.</p>
+
+      <blockquote>"기본 패키지가 300만원이면 진짜 결제는 450만원 안팎이에요. 광고가만 보고 결정하지 말고, 실제 결제 시나리오까지 계약 전에 물어봐야 해요."</blockquote>
+
+      <h2>분리 계약 — 어떻게 진행하나</h2>
+
+      <h3>① 스튜디오 (촬영)</h3>
+      <ul>
+        <li>예산: 150~250만원 (등급별)</li>
+        <li>방법: 인스타·웨딩북에서 사진 스타일 보고 후보 3곳</li>
+        <li>방문 → 견적 비교 → 계약</li>
+        <li>의상 컨셉(노출·실내·야외)도 결정</li>
+      </ul>
+
+      <h3>② 드레스 (대여)</h3>
+      <ul>
+        <li>예산: 100~200만원 (본식 + 촬영 = 2벌이 보통)</li>
+        <li>방법: 강남 압구정·청담 드레스샵 2~3곳 시착</li>
+        <li>가봉 일정 미리 잡기 (예식 1개월 전)</li>
+        <li>피팅 비 별도 발생 가능</li>
+      </ul>
+
+      <h3>③ 메이크업</h3>
+      <ul>
+        <li>예산: 50~100만원 (본식 + 촬영)</li>
+        <li>방법: 메이크업샵 또는 출장 메이크업</li>
+        <li>본식 출장 메이크업은 30만원 추가 흔함</li>
+        <li>친정엄마·신랑 메이크업도 같이 견적</li>
+      </ul>
+
+      <h2>어떤 부부에게 어떤 방식이 맞나</h2>
+
+      <h3>패키지가 맞는 부부</h3>
+      <ul>
+        <li>준비 시간이 부족한 부부 (D-3~6개월)</li>
+        <li>완성된 품질 일관성이 더 중요한 부부</li>
+        <li>웨딩홀 제휴 할인이 의미 있는 경우 (10% 이상)</li>
+        <li>고민·결정에 스트레스받는 성향</li>
+      </ul>
+
+      <h3>분리 계약이 맞는 부부</h3>
+      <ul>
+        <li>D-6개월 이상 시간 있는 부부</li>
+        <li>가성비 추구·자기 취향 명확</li>
+        <li>인스타·웨딩북·블링 같은 플랫폼 잘 다루는 편</li>
+        <li>발품 안 아까운 성향</li>
+      </ul>
+
+      <h2>실전 체크리스트</h2>
+
+      <h3>패키지 계약 시</h3>
+      <ol>
+        <li>"기본 패키지에 포함되는 것" 리스트 받기</li>
+        <li>"흔히 추가되는 옵션 + 평균 가격" 미리 물어보기</li>
+        <li>변경·취소 위약금 조항 확인</li>
+        <li>웨딩홀 제휴 할인 % 확인</li>
+        <li>총 예상 결제액 (기본 + 평균 옵션) 계산해보기</li>
+      </ol>
+
+      <h3>분리 계약 시</h3>
+      <ol>
+        <li>스튜디오 2~3곳 견적 받고 비교</li>
+        <li>드레스 시착 일정 미리 잡기</li>
+        <li>메이크업 출장비 추가 여부 확인</li>
+        <li>각 계약서 위약금·일정 변경 조건 체크</li>
+        <li>총 예산 vs 패키지 견적 비교</li>
+      </ol>
+
+      <div class="cta">
+        <h3>총 결혼 비용 진단</h3>
+        <p>스드메만 정해도 다 끝난 게 아니에요. 결혼식 전체 예산 30초 진단.</p>
+        <a href="/">한집 진단기 시작하기 →</a>
+      </div>
+
+      <h2>관련 가이드</h2>
+      <div class="related">
+        <a href="/sdm-prices/">
+          <div class="label">스드메 가격</div>
+          <div class="title">스드메 평균 가격 (지역별·등급별)</div>
+        </a>
+        <a href="/wedding-savings-tips/">
+          <div class="label">절약 팁</div>
+          <div class="title">결혼 비용 절약 팁 10가지</div>
+        </a>
+        <a href="/wedding-checklist/">
+          <div class="label">체크리스트</div>
+          <div class="title">결혼 준비 6개월 체크리스트</div>
+        </a>
+        <a href="/guide/">
+          <div class="label">결혼 비용</div>
+          <div class="title">2026 결혼 비용 평균 가이드</div>
+        </a>
+      </div>
+
+      <footer>
+        <a href="/">홈</a> ·
+        <a href="/guide/">결혼 비용 가이드</a> ·
+        <a href="/sdm-vs-package/">스드메 비교</a> ·
+        <a href="/sdm-prices/">스드메 가격</a> ·
+        <a href="/honeymoon-cost/">신혼여행</a> ·
+        <a href="/privacy/">개인정보처리방침</a> ·
+        <a href="/terms/">이용약관</a>
+        <p style="margin-top:16px">© 2026 한집</p>
+      </footer>
+    </div>
+  </body>
+</html>
